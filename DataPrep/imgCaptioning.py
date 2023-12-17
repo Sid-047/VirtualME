@@ -1,7 +1,6 @@
 from transformers import BlipProcessor, BlipForConditionalGeneration
 from tkinter import filedialog
 from PIL import Image
-import random
 import torch
 import tqdm
 import glob
@@ -13,9 +12,14 @@ preCon = input("PreCaption Contents Yo: ") + ' '
 postCon = input("PostCaption Contents Yo: ")
 
 t1 = time.time()
-print("Select the Directory Yo!")
+print("Select the imgDirectory Yo!")
 imgDir = filedialog.askdirectory() + '//'
 print("---->", imgDir)
+
+print("Select the Out captionDirectory Yo!")
+capDir = filedialog.askdirectory() + '//'
+print("---->", capDir)
+
 x = [glob.glob(imgDir+y) for y in ['*.jpg', '*.png', '*.tiff', '*.bmp', '*.jpeg']]
 x = sum(x , [])
 
@@ -30,7 +34,9 @@ for i in tqdm.tqdm(x, desc = "Captionin' the Images Yo!", colour = 'red'):
     genOut = processor.decode(out[0], skip_special_tokens=True).replace('there is a', 'a')
     txtOut = preCon + genOut + postCon
     print(txtOut)
-    f = open(i.split('.')[-2] + '.txt', 'w')
+    i = i.replace(imgDir, capDir)
+    i = ''.join([str(x) for x in i.split('.')[:-1]])
+    f = open(i + '.txt', 'w')
     f.write(txtOut)
     f.close()
 

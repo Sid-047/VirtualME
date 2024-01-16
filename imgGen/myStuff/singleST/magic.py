@@ -9,14 +9,12 @@ import os
 
 print(Fore.BLUE+Style.BRIGHT+"\n\nSelect the fineTuned SafeTensor File Yo!"+Fore.RESET)
 inLoRA = filedialog.askopenfilename(filetypes=[("LoRA SafeTensor", "*.safetensors")])
-if not os.path.isdir("genImg"):
-    os.makedirs("genImg")
 
 w = 768
 h = 768 
 gScale = 7.5
 valSeed = 42
-nSampling = 250
+nSampling = 10
 pPrompt = "vSid a hyper-realistic man statue, best quality, upper body, \
     looking at viewer, simple background"
 nPrompt = "worst quality, Disfigured, logo, Malformed, kitsch, extra legs,\
@@ -74,9 +72,7 @@ def callbackLatent(pipe, i, t, latents):
         imgStage = pipe.vae.decode(latents_).sample[0]
     imgStage = (imgStage / 2 + 0.5).clamp(0, 1)
     imgStage = imgStage.cpu().permute(1, 2, 0).numpy()
-    imgStage = (imgStage * 255).round().astype("uint8")
-    imgStages.append(Image.fromarray(imgStage))
-    imgStages[-1].save("genImg\{}.png".format(str(len(imgStages))+'_'+str(time.time())))
+    imgStages.extend(pipe.numpy_to_pil(imgStage))
     return latents
 
 t1 = time.time()
@@ -85,8 +81,13 @@ img = pipe(prompt = pPrompt, negative_prompt = nPrompt, height = h,
         guidance_scale = gScale, callback_on_step_end = callbackLatent).images[0]
 
 imgStages.append(img)
-img.save("genImg\{}.png".format(str(len(imgStages))+'_'+str(time.time())))
 
+if not os.path.isdir("genImg"):
+    os.makedirs("genImg")
+
+print(imgStages)
+for i, img in tqdm(enumerate(imgStages), desc="Gettin' images Yo!", colour="red"):
+    img.save("genImg\{}.png".format(str(i)+'_'+str(time.time())))
 t2 = time.time()
 
 print("\nExecTime: ", (t2-t1))

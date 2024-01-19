@@ -14,7 +14,7 @@ w = 768
 h = 768 
 gScale = 7.5
 valSeed = 42
-nSampling = 250
+nSampling = 61
 pPrompt = "vSid a hyper-realistic man statue, best quality, upper body, \
     looking at viewer, simple background"
 nPrompt = "worst quality, Disfigured, logo, Malformed, kitsch, extra legs,\
@@ -66,6 +66,24 @@ pipe.load_lora_weights(inLoRA)
 pipe.fuse_lora()
 imgStages = []
 
+if not os.path.isdir("genImg"):
+    os.makedirs("genImg")
+
+os.chdir("genImg")
+dirAr = [x for x in os.listdir() if "run" in x]
+outDir = "run"+str(len(dirAr)+1)
+if not os.path.isdir(outDir):
+    os.makedirs(outDir)
+
+print(Fore.CYAN+Style.BRIGHT+"\n Latent imgOUT genImg\{} Dir Yo!".format(outDir)+Fore.RESET)
+
+f = open(r"{}\prompt.txt".format(outDir), 'w')
+inDict = {"guidanceScale-> " : gScale, "samplingSteps-> " : nSampling, "imgHeight-> " : h, "imgWidth-> " : w, 
+          "seedVal-> " : valSeed, "Prompt-> " : pPrompt, "negativePrompt-> " : nPrompt}
+inTxt = '\n'.join(y+str(inDict[y]).replace('  ','') for y in inDict)
+f.write(inTxt)
+f.close()
+
 def callbackLatent(pipe, i, t, latents):
     latents_ = 1 / 0.18215 * latents['latents']
     with torch.no_grad():
@@ -79,15 +97,10 @@ t1 = time.time()
 img = pipe(prompt = pPrompt, negative_prompt = nPrompt, height = h, 
         width = w, num_inference_steps = nSampling, generator = gSeed, 
         guidance_scale = gScale, callback_on_step_end = callbackLatent).images[0]
-
 imgStages.append(img)
 
-if not os.path.isdir("genImg"):
-    os.makedirs("genImg")
-
-print(imgStages)
 for i, img in tqdm(enumerate(imgStages), desc="Gettin' images Yo!", colour="red"):
-    img.save("genImg\{}.png".format(str(i)+'_'+str(time.time())))
+    img.save(outDir+"\{}.png".format(str(i)+'_'+str(time.time())))
 t2 = time.time()
 
 print("\nExecTime: ", (t2-t1))

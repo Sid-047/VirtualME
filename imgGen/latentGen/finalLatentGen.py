@@ -1,7 +1,6 @@
 from diffusers import DiffusionPipeline
 from colorama import Fore, Style
 from tkinter import filedialog
-from PIL import Image
 from tqdm import tqdm
 import torch
 import time
@@ -14,7 +13,7 @@ w = 768
 h = 768 
 gScale = 7.5
 valSeed = 42
-nSampling = 61
+nSampling = 100
 pPrompt = "vSid a hyper-realistic man statue, best quality, upper body, \
     looking at viewer, simple background"
 nPrompt = "worst quality, Disfigured, logo, Malformed, kitsch, extra legs,\
@@ -60,7 +59,7 @@ nPrompt = "worst quality, Disfigured, logo, Malformed, kitsch, extra legs,\
                                         Low resolution, Fused fingers, bad face"
 
 gSeed = torch.Generator(device="cuda").manual_seed(valSeed)
-pipe = DiffusionPipeline.from_pretrained("stabilityai/stable-diffusion-xl-base-1.0", use_safetensors=True, variant="fp16")
+pipe = DiffusionPipeline.from_pretrained("stabilityai/stable-diffusion-xl-base-1.0", torch_dtype=torch.bfloat16, use_safetensors=True, variant="fp16")
 pipe = pipe.to("cuda")
 pipe.load_lora_weights(inLoRA)
 pipe.fuse_lora()
@@ -79,19 +78,20 @@ print(Fore.CYAN+Style.BRIGHT+"\n Latent imgOUT genImg\{} Dir Yo!".format(outDir)
 
 f = open(r"{}\prompt.txt".format(outDir), 'w')
 inDict = {"guidanceScale-> " : gScale, "samplingSteps-> " : nSampling, "imgHeight-> " : h, "imgWidth-> " : w, 
-          "seedVal-> " : valSeed, "Prompt-> " : pPrompt, "negativePrompt-> " : nPrompt}
+          "seedVal-> " : valSeed, "Prompt-> " : pPrompt, "negativePrompt-> " : nPrompt, "inLoRA-> " : inLoRA}
 inTxt = '\n'.join(y+str(inDict[y]).replace('  ','') for y in inDict)
 f.write(inTxt)
 f.close()
 
-def callbackLatent(pipe, i, t, latents):
-    latents_ = 1 / 0.18215 * latents['latents']
+def callbackLatent(pipe, i, t, latentStuff):
+    t1_=time.time()
+    latentPrep = 1 / 0.18215 * latentStuff['latents']
     with torch.no_grad():
-        imgStage = pipe.vae.decode(latents_).sample[0]
-    imgStage = (imgStage / 2 + 0.5).clamp(0, 1)
+        imgStage = pipe.vae.decode(latentPrep).sample[0]
+    imgStage = (imgStage / 2 + 0.5).clamp(0, 1).to(torch.float32)
     imgStage = imgStage.cpu().permute(1, 2, 0).numpy()
     imgStages.extend(pipe.numpy_to_pil(imgStage))
-    return latents
+    return latentStuff
 
 t1 = time.time()
 img = pipe(prompt = pPrompt, negative_prompt = nPrompt, height = h, 

@@ -1,0 +1,9 @@
+huggingface-hub==0.20.3 
+transformers==4.37.2
+safetensors==0.4.2 
+tokenizers==0.15.1
+accelerate==0.26.1 
+diffusers==0.25.1 
+colorama==0.4.6  
+tqdm==4.66.1
+torch==2.0.1

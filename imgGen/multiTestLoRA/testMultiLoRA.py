@@ -7,7 +7,7 @@ import tqdm
 import time
 import os
 
-print(Fore.BLUE+Style.BRIGHT+"\n\nSelect the fineTuned SafeTensor File Yo!"+Fore.RESET)
+print(Fore.BLUE+Style.BRIGHT+"\n\nSelect the fineTuned SafeTensor File Directory Yo!"+Fore.RESET)
 inDir = filedialog.askdirectory() + '\\'
 
 filesLoRA = glob.glob(inDir+"/*.safetensors")
@@ -16,8 +16,8 @@ w = 768
 h = 768 
 gScale = 7.5
 valSeed = 42
-pPrompt = "vSid a hyper-realistic man statue, best quality, upper body, \
-    looking at viewer, simple background"
+pPrompt = "vSid a hyper-realistic man in formal high definition passport size photo, best quality, upper body, center of frame, \
+    looking front, looking at camera, simple plain background, in photo studio with professional lighting and camera"
 nPrompt = "worst quality, Disfigured, logo, Malformed, kitsch, extra legs,\
         malformed limbs, Replicate, long fingers, Distorted, watermark, jpeg artifacts, \
         Extra arms, Tiling, worst face, disgusting, mangled, Outside the picture, extra fingers, \
@@ -66,9 +66,9 @@ if not os.path.isdir("genDir"):
     os.makedirs("genDir")
 os.chdir("genDir")
 
-if not os.path.isdir("runOne"):
-    os.makedirs("runOne")
-os.chdir("runOne")
+if not os.path.isdir("runFour"):
+    os.makedirs("runFour")
+os.chdir("runFour")
 
 t1 = time.time()
 for i in tqdm.tqdm(filesLoRA, desc = "Flowin' through safeTensors Yo!", colour = "white"):
@@ -84,7 +84,7 @@ for i in tqdm.tqdm(filesLoRA, desc = "Flowin' through safeTensors Yo!", colour =
         nSampling+=1
         img = pipe(prompt = pPrompt, negative_prompt = nPrompt, height = h, width = w, 
                 num_inference_steps = nSampling, generator = gSeed, guidance_scale = gScale).images[0]
-        img.save(imgDir+"\{}.png".format(str(nSampling)+'_'+str(time.time())))
+        img.save(imgDir+"\{}.png".format(str(nSampling)+'_'+imgDir+'_'+str(time.time())))
 
 t2 = time.time()
 print("\nExecTime: ", (t2-t1))

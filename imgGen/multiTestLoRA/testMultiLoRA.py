@@ -13,12 +13,12 @@ inDir = filedialog.askdirectory() + '\\'
 filesLoRA = glob.glob(inDir+"/*.safetensors")
 
 w = 768
-h = 768 
+h = 1024
 gScale = 7.5
 valSeed = 42
 pPrompt = "vSid a hyper-realistic man in formal high definition passport size photo, best quality, upper body, center of frame, \
-    looking front, looking at camera, simple plain background, in photo studio with professional lighting and camera"
-nPrompt = "worst quality, Disfigured, logo, Malformed, kitsch, extra legs,\
+    high resolution, looking front, looking at camera, simple plain background, photo shot in photo studio with professional lighting and professional camera"
+nPrompt = "eyeglasses glare, wrinkles, forehead lines, worst quality, Disfigured, logo, Malformed, kitsch, extra legs,\
         malformed limbs, Replicate, long fingers, Distorted, watermark, jpeg artifacts, \
         Extra arms, Tiling, worst face, disgusting, mangled, Outside the picture, extra fingers, \
         Deformed, Mistake, Blank background, bad anatomy, extra limbs, distorted face, \
@@ -66,9 +66,9 @@ if not os.path.isdir("genDir"):
     os.makedirs("genDir")
 os.chdir("genDir")
 
-if not os.path.isdir("runFour"):
-    os.makedirs("runFour")
-os.chdir("runFour")
+if not os.path.isdir("runFive"):
+    os.makedirs("runFive")
+os.chdir("runFive")
 
 t1 = time.time()
 for i in tqdm.tqdm(filesLoRA, desc = "Flowin' through safeTensors Yo!", colour = "white"):

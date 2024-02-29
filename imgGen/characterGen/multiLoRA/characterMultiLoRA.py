@@ -13,7 +13,7 @@ print(Fore.RED+Style.BRIGHT+"\n\nEnter the Charaters Yo n Jus' Enter '7' to End!
 while True:
     x = input()
     if x!='7':
-        charList.append(x)
+        charList.append(x.lower())
     else:
         break
 
@@ -74,9 +74,13 @@ if not os.path.isdir("genDir"):
     os.makedirs("genDir")
 os.chdir("genDir")
 
-if not os.path.isdir("runOne"):
-    os.makedirs("runOne")
-os.chdir("runOne")
+if not os.path.isdir("runFive"):
+    os.makedirs("runFive")
+os.chdir("runFive")
+
+f = open("runFive\\promptList.txt", 'a')
+f.write('\n\n'+str(charList))
+f.close()
 
 t1 = time.time()
 for i in tqdm.tqdm(filesLoRA, desc = "Flowin' through safeTensors Yo!", colour = "white"):
@@ -88,7 +92,7 @@ for i in tqdm.tqdm(filesLoRA, desc = "Flowin' through safeTensors Yo!", colour =
         os.makedirs(imgDir)
     pipe.load_lora_weights(i)
     pipe.fuse_lora()
-    for j in tqdm.tqdm(list(range(67)), desc = "Samplin' iters Yo!", colour = "red"):
+    for j in tqdm.tqdm(list(range(88)), desc = "Samplin' iters Yo!", colour = "red"):
         nSampling+=1
         random.shuffle(charList)
         charStuff = random.choice(charList)

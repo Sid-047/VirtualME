@@ -19,6 +19,12 @@ while True:
 
 print(Fore.BLUE+Style.BRIGHT+"\n\nSelect the fineTuned SafeTensor File Yo!"+Fore.RESET)
 inLoRA = filedialog.askopenfilename(filetypes=[("LoRA SafeTensor", "*.safetensors")])
+if "\\" in inLoRA:
+    fileLoRA = inLoRA.split('\\')[-1]
+    inDir = inLoRA.replace(fileLoRA , '')
+else:
+    fileLoRA = inLoRA.split('/')[-1]
+    inDir = inLoRA.replace(fileLoRA , '')
 
 w = 768
 h = 1024
@@ -83,7 +89,8 @@ pipe = pipe.to("cuda")
 nSampling = 9
 pipe.load_lora_weights(inLoRA)
 pipe.fuse_lora()
-for j in tqdm.tqdm(list(range(67)), desc = "Samplin' iters Yo!", colour = "red"):
+imgDir = inLoRA.replace(inDir, "").split('.')[0]
+for j in tqdm.tqdm(list(range(68)), desc = "Samplin' iters Yo!", colour = "red"):
     nSampling+=1
     random.shuffle(charList)
     charStuff = random.choice(charList)

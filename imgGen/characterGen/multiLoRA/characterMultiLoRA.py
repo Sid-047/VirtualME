@@ -74,11 +74,11 @@ if not os.path.isdir("genDir"):
     os.makedirs("genDir")
 os.chdir("genDir")
 
-if not os.path.isdir("runFive"):
-    os.makedirs("runFive")
-os.chdir("runFive")
+if not os.path.isdir("runSix"):
+    os.makedirs("runSix")
+os.chdir("runSix")
 
-f = open("runFive\\promptList.txt", 'a')
+f = open("promptList.txt", 'a')
 f.write('\n\n'+str(charList))
 f.close()
 

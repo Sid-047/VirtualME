@@ -82,8 +82,11 @@ if not os.path.isdir("runTwo"):
     os.makedirs("runTwo")
 os.chdir("runTwo")
 
-t1 = time.time()
+f = open("promptList.txt", 'a')
+f.write('\n\n'+str(charList))
+f.close()
 
+t1 = time.time()
 pipe = DiffusionPipeline.from_pretrained("stabilityai/stable-diffusion-xl-base-1.0", torch_dtype=torch.float16, use_safetensors=True, variant="fp16")
 pipe = pipe.to("cuda")
 nSampling = 9

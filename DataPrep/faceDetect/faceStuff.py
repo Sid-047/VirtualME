@@ -12,8 +12,7 @@ import cv2
 import os
 
 print(Fore.YELLOW+Style.BRIGHT+"\n\nSelect in-imgDir Yo !"+Fore.RESET)
-#imgDir = filedialog.askdirectory()
-imgDir = 'P:\\OpenSourceContribution\\VirtualME\\DataPrep\\prepData\\oldDim'
+imgDir = filedialog.askdirectory()
 print("---->", imgDir)
 if "\\" in imgDir:
     imgDir = imgDir + '\\'
@@ -21,8 +20,7 @@ else:
     imgDir = imgDir + '/'
 
 print(Fore.BLUE+Style.BRIGHT+"\n\nSelect the Trained Weight File Yo!"+Fore.RESET)
-#inWeight = filedialog.askopenfilename(filetypes=[("pt Weight File", "*.pt")])
-inWeight = 'P:\\OpenSourceContribution\\VirtualME\\DataPrep\\faceDetect\\trainedWeights\\faceDetectLast.pt'
+inWeight = filedialog.askopenfilename(filetypes=[("pt Weight File", "*.pt")])
 
 numStuff = {'vFace': 0}
 clsStuff = {0: 'vFace'}
@@ -43,24 +41,16 @@ for inImg in tqdm.tqdm(imgStuff, desc = "Flowin' through images Yo!", colour = "
     if len(outStuff.cls)==0:
         print("Daaawwm !")
     else:
-        imgWidth = int(outStuff.orig_shape[0])
-        imgHeight = int(outStuff.orig_shape[1])
-        xCen = float(outStuff.xywhn[0][0])
-        yCen = float(outStuff.xywhn[0][1])
-        clsWidth = float(outStuff.xywhn[0][2])
-        clsHeight = float(outStuff.xywhn[0][3])
-        xUnits = int(clsWidth * imgWidth)
-        yUnits = int(clsHeight * imgHeight)
-        xMin = int(((xCen * imgWidth * 2) - xUnits) / 2)
-        yMin = int(((yCen * imgHeight * 2) - yUnits) / 2)
-        xMax = xMin + xUnits
-        yMax = yMin + yUnits
+        xMin = int(outStuff.xyxy[0][0])
+        yMin = int(outStuff.xyxy[0][1])
+        xMax = int(outStuff.xyxy[0][2])
+        yMax = int(outStuff.xyxy[0][3])
         imgAr = cv2.imread(inImg, 0)
         print(imgAr)
         print(imgAr.shape)
         print("xMin {} xMax {} yMin {} yMax {}".format(xMin, xMax, yMin, yMax))
-        faceStuff = imgAr[xMin:xMax, yMin:yMax]
+        faceStuff = imgAr[yMin:yMax, xMin:xMax]
         print(faceStuff)
         print(faceStuff.shape)
-        plt.imshow(faceStuff)
+        plt.imshow(faceStuff, cmap='gray')
         plt.show()

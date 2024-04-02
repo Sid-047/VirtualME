@@ -13,17 +13,23 @@ import cv2
 import os
 
 print(Fore.YELLOW+Style.BRIGHT+"\n\nSelect in-imgDir Yo !"+Fore.RESET)
-#imgDir = filedialog.askdirectory()
-imgDir = 'P:\\OpenSourceContribution\\VirtualME\\DataPrep\\prepData\\oldDim'
+imgDir = filedialog.askdirectory()
 print("---->", imgDir)
 if "\\" in imgDir:
     imgDir = imgDir + '\\'
 else:
     imgDir = imgDir + '/'
 
+print(Fore.CYAN+Style.BRIGHT+"\n\nSelect out-imgDir Yo !"+Fore.RESET)
+outDir = filedialog.askdirectory()
+print("---->", outDir)
+if "\\" in outDir:
+    outDir = outDir + '\\'
+else:
+    outDir = outDir + '/'
+
 print(Fore.BLUE+Style.BRIGHT+"\n\nSelect the Trained Weight File Yo!"+Fore.RESET)
-#inWeight = filedialog.askopenfilename(filetypes=[("pt Weight File", "*.pt")])
-inWeight = 'P:\\OpenSourceContribution\\VirtualME\\DataPrep\\faceDetect\\trainedWeights\\faceDetectLast.pt'
+inWeight = filedialog.askopenfilename(filetypes=[("pt Weight File", "*.pt")])
 
 numStuff = {'vFace': 0}
 clsStuff = {0: 'vFace'}
@@ -70,9 +76,7 @@ for inImg in tqdm.tqdm(imgStuff, desc = "Flowin' through images Yo!", colour = "
                 xStart = 0
                 xEnd = imgHeight
             imgOutAr = imgAr[0:imgHeight, xStart:xEnd]
-            #imgOutAr = cv2.resize(imgAr, (math.ceil(512*(imgWidth/imgHeight)), 512), interpolation = cv2.INTER_AREA)
-            plt.imshow(imgOutAr, cmap='gray')
-            plt.show()
+            imgReSizedAr = cv2.resize(imgOutAr, (512, 512), interpolation = cv2.INTER_AREA)
         else:
             print("imgWidth {}".format(imgWidth))
             yMid = (yMin+yMax)//2
@@ -85,6 +89,10 @@ for inImg in tqdm.tqdm(imgStuff, desc = "Flowin' through images Yo!", colour = "
                 yStart = 0
                 yEnd = imgWidth
             imgOutAr = imgAr[yStart:yEnd, 0:imgWidth]
-            #imgOutAr = cv2.resize(imgAr, (512, math.ceil(512*(imgHeight/imgWidth))), interpolation = cv2.INTER_AREA)
-            plt.imshow(imgOutAr, cmap='gray')
-            plt.show()
+            imgReSizedAr = cv2.resize(imgOutAr, (512, 512), interpolation = cv2.INTER_AREA)
+        outImg = inImg.replace(imgDir, outDir)
+        cv2.imwrite(outImg, imgReSizedAr)
+        plt.imshow(imgOutAr, cmap='gray')
+        plt.show()
+        plt.imshow(imgReSizedAr, cmap='gray')
+        plt.show()

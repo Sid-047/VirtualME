@@ -13,7 +13,7 @@ x = [glob.glob(imgDir+y) for y in ['*.jpg', '*.png', '*.tiff', '*.bmp', '*.jpeg'
 x = sum(x , [])
 random.shuffle(x)
 
-a=0
+a=1
 for i in tqdm.tqdm(x, desc = "ReNamin' the Images Yo!", colour = 'red'):
     os.rename(i, imgDir+str(a)+'.'+i.split('.')[-1])
     a+=1

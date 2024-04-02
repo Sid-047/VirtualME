@@ -37,21 +37,7 @@ print(imgStuff)
 
 outVal = []
 for inImg in tqdm.tqdm(imgStuff, desc = "Flowin' through images Yo!", colour = "red"):
-    imgAr = cv2.imread(inImg, 0)
-    print(imgAr.shape)
-    imgWidth = imgAr.shape[0]
-    imgHeight = imgAr.shape[1]
-    if imgHeight<imgWidth:
-        print("imgHeight {}".format(imgHeight))
-        imgOutAr = cv2.resize(imgAr, (math.ceil(512*(imgWidth/imgHeight)), 512), interpolation = cv2.INTER_AREA)
-        plt.imshow(imgOutAr, cmap='gray')
-        plt.show()
-    else:
-        print("imgWidth {}".format(imgWidth))
-        imgOutAr = cv2.resize(imgAr, (512, math.ceil(512*(imgHeight/imgWidth))), interpolation = cv2.INTER_AREA)
-        plt.imshow(imgOutAr, cmap='gray')
-        plt.show()
-    '''outStuff = modelStuff(inImg, save_conf=True)
+    outStuff = modelStuff(inImg, save_conf=True)
     outStuff = outStuff[0].boxes.to("cpu")
     print(outStuff)
     print(len(outStuff.cls))
@@ -64,10 +50,41 @@ for inImg in tqdm.tqdm(imgStuff, desc = "Flowin' through images Yo!", colour = "
         yMax = int(outStuff.xyxy[0][3])
         imgAr = cv2.imread(inImg, 0)
         print(imgAr)
-        print(imgAr.shape)
+        print("imgAr ", imgAr.shape)
         print("xMin {} xMax {} yMin {} yMax {}".format(xMin, xMax, yMin, yMax))
         faceStuff = imgAr[yMin:yMax, xMin:xMax]
-        print(faceStuff)
-        print(faceStuff.shape)
+        print("faceStuff ", faceStuff.shape)
         plt.imshow(faceStuff, cmap='gray')
-        plt.show()'''
+        plt.show()
+        imgWidth = imgAr.shape[1]
+        imgHeight = imgAr.shape[0]
+        if imgHeight<imgWidth:
+            print("imgHeight {}".format(imgHeight))
+            xMid = (xMin+xMax)//2
+            while (xMid+(imgHeight//2)) > imgWidth:
+                xMid-=5
+            print("------> xMid ",xMid)
+            xStart = xMid-(imgHeight//2)
+            xEnd = xMid+(imgHeight//2)
+            if xStart < 0:
+                xStart = 0
+                xEnd = imgHeight
+            imgOutAr = imgAr[0:imgHeight, xStart:xEnd]
+            #imgOutAr = cv2.resize(imgAr, (math.ceil(512*(imgWidth/imgHeight)), 512), interpolation = cv2.INTER_AREA)
+            plt.imshow(imgOutAr, cmap='gray')
+            plt.show()
+        else:
+            print("imgWidth {}".format(imgWidth))
+            yMid = (yMin+yMax)//2
+            while (yMid+(imgWidth//2)) > imgHeight:
+                yMid-=5
+            print("------> yMid ",yMid)
+            yStart = yMid-(imgWidth//2)
+            yEnd = yMid+(imgWidth//2)
+            if yStart < 0:
+                yStart = 0
+                yEnd = imgWidth
+            imgOutAr = imgAr[yStart:yEnd, 0:imgWidth]
+            #imgOutAr = cv2.resize(imgAr, (512, math.ceil(512*(imgHeight/imgWidth))), interpolation = cv2.INTER_AREA)
+            plt.imshow(imgOutAr, cmap='gray')
+            plt.show()

@@ -1,0 +1,8 @@
+opencv-python==4.8.0.76
+ultralytics==8.1.40
+matplotlib==3.7.2
+colorama==0.4.6
+pandas==1.5.3
+torch==2.1.2
+numpy==1.23.5
+tqdm==4.66.1
